@@ -1,0 +1,12 @@
+#Wed Jul 07 18:08:36 GMT+08:00 2021
+eclipse.preferences.version=1
+org.eclipse.jdt.apt.aptEnabled=true
+org.eclipse.jdt.apt.reconcileEnabled=true
+org.eclipse.jdt.apt.genSrcDir=D\:\\Projects\\MinimalEffects\\build\\.apt_generated
+org.eclipse.jdt.apt.genSrcTestDir=D\:\\Projects\\MinimalEffects\\build\\.apt_generated_test
+org.eclipse.jdt.apt.processorOptions/reobfTsrgFile=D\:\\Projects\\MinimalEffects\\build\\createMcpToSrg\\output.tsrg
+org.eclipse.jdt.apt.processorOptions/outTsrgFile=D\:\\Projects\\MinimalEffects\\build\\eclipseJdtApt\\mixins.mappings.tsrg
+org.eclipse.jdt.apt.processorOptions/outRefMapFile=D\:\\Projects\\MinimalEffects\\build\\eclipseJdtApt\\mixins.refmap.json
+org.eclipse.jdt.apt.processorOptions/pluginVersion=0.7
+org.eclipse.jdt.apt.processorOptions/defaultObfuscationEnv=searge
+org.eclipse.jdt.apt.processorOptions/mappingTypes=tsrg

@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.teacon.theelixir.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "the_elixir.refmap.json",
+  "mixins": [
+    "MixinDisplayEffectsScreen"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
