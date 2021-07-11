@@ -14,10 +14,10 @@ import snownee.minieffects.IAreasGetter;
 @Mixin(targets = "mezz.jei.plugins.vanilla.InventoryEffectRendererGuiHandler")
 public class MixinInventoryEffectRendererGuiHandler {
 
-	@Inject(method = "getGuiExtraAreas", at = @At("HEAD"), cancellable = true, remap = false)
-	public void getGuiExtraAreas(DisplayEffectsScreen<?> containerScreen, CallbackInfoReturnable<List<Rectangle2d>> ci) {
-		if (containerScreen instanceof IAreasGetter)
-			ci.setReturnValue(((IAreasGetter) containerScreen).getAreas());
-	}
+    @Inject(method = "getGuiExtraAreas", at = @At("HEAD"), cancellable = true, remap = false)
+    public void getGuiExtraAreas(DisplayEffectsScreen<?> containerScreen, CallbackInfoReturnable<List<Rectangle2d>> ci) {
+        if (containerScreen instanceof IAreasGetter)
+            ci.setReturnValue(((IAreasGetter) containerScreen).getAreas());
+    }
 
 }

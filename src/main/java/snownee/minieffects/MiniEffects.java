@@ -7,14 +7,14 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod("minieffects")
 public class MiniEffects {
-	public MiniEffects() {
-		if (FMLEnvironment.dist.isClient()) {
-			MinecraftForge.EVENT_BUS.addListener(this::onPotionShift);
-		}
-	}
+    public MiniEffects() {
+        if (FMLEnvironment.dist.isClient()) {
+            MinecraftForge.EVENT_BUS.addListener(this::onPotionShift);
+        }
+    }
 
-	public void onPotionShift(GuiScreenEvent.PotionShiftEvent event) {
-		event.setCanceled(true);
-	}
+    public void onPotionShift(GuiScreenEvent.PotionShiftEvent event) {
+        event.setCanceled(true);
+    }
 
 }
