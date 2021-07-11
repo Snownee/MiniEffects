@@ -12,7 +12,7 @@
         <mapEntry key="MCP_MAPPINGS" value="snapshot_20210309-1.16.5"/>
         <mapEntry key="MCP_VERSION" value="20210115.111550"/>
         <mapEntry key="MC_VERSION" value="1.16.5"/>
-        <mapEntry key="MOD_CLASSES" value="the_elixir%%D:\Projects\MinimalEffects\bin\main;the_elixir%%D:\Projects\MinimalEffects\bin\main"/>
+        <mapEntry key="MOD_CLASSES" value="minieffects%%D:\Projects\MinimalEffects\bin\main;minieffects%%D:\Projects\MinimalEffects\bin\main"/>
         <mapEntry key="assetDirectory" value="C:\Users\Snownee\.gradle\caches\forge_gradle\assets"/>
         <mapEntry key="assetIndex" value="1.16"/>
         <mapEntry key="nativesDirectory" value="D:\Projects\MinimalEffects\build\natives"/>
@@ -20,7 +20,7 @@
     </mapAttribute>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="net.minecraftforge.userdev.LaunchTesting"/>
     <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="MinimalEffects"/>
-    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-mixin.config=the_elixir.mixins.json"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-mixin.config=minieffects.mixins.json"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="MinimalEffects"/>
     <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dforge.logging.console.level=info -Dforge.logging.markers=REGISTRIES -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump &quot;-Dos.name=Windows 10&quot; -Dos.version=10.0"/>
     <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="D:\Projects\MinimalEffects\run"/>
