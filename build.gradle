@@ -19,7 +19,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.spongepowered.mixin'
 
 group = 'snownee'
-version = '0.0.1'
+version = '0.0.2'
 archivesBaseName = 'MiniEffects-1.16.5'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
