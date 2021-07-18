@@ -8,8 +8,8 @@ import net.minecraft.network.datasync.DataParameter;
 
 @Mixin(LivingEntity.class)
 public interface MixinLivingEntity {
-    @Accessor("POTION_EFFECTS")
-    static DataParameter<Integer> getParameter() {
-        throw new UnsupportedOperationException("wat?");
-    }
+	@Accessor("POTION_EFFECTS")
+	static DataParameter<Integer> getParameter() {
+		throw new UnsupportedOperationException("wat?");
+	}
 }
