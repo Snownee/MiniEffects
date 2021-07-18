@@ -1,15 +1,11 @@
 {
-  "required": true,
-  "minVersion": "0.8",
   "package": "snownee.minieffects.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "minieffects.refmap.json",
   "mixins": [
   ],
   "client": [
     "MixinDisplayEffectsScreen",
-    "MixinLivingEntity",
-    "compat.MixinInventoryEffectRendererGuiHandler"
+    "MixinLivingEntity"
   ],
   "injectors": {
     "defaultRequire": 1

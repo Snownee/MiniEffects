@@ -1,9 +1,0 @@
-modLoader="javafml"
-loaderVersion="[36,)"
-license="MIT"
-
-[[mods]]
-modId="minieffects"
-version="${file.jarVersion}"
-displayName="Mini Effects"
-authors="Snownee"

@@ -1,0 +1,10 @@
+[
+{
+  "modid": "${mod_id}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "authorList": ${mod_author}
+}
+]
