@@ -7,3 +7,6 @@ modId="minieffects"
 version="${file.jarVersion}"
 displayName="Mini Effects"
 authors="Snownee"
+
+[modproperties.minieffects]
+    catalogueItemIcon="minecraft:potion" #Support for Catalogue mod
