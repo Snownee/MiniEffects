@@ -1,6 +1,7 @@
 {
   "package": "snownee.minieffects.mixin",
   "compatibilityLevel": "JAVA_8",
+  "refmap": "minieffects.refmap.json",
   "mixins": [
   ],
   "client": [
