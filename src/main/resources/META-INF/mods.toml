@@ -1,12 +1,26 @@
 modLoader="javafml"
-loaderVersion="[36,)"
+loaderVersion="[37,)"
 license="MIT"
 
 [[mods]]
 modId="minieffects"
-version="${file.jarVersion}"
-displayName="Mini Effects"
+version="3.0.0"
+displayName="MiniEffects"
 authors="Snownee"
+description='''Add a toggle to show/hide potion effects view in inventory'''
 
 [modproperties.minieffects]
-    catalogueItemIcon="minecraft:potion" #Support for Catalogue mod
+catalogueItemIcon="minecraft:potion" #Support for Catalogue mod
+
+[[dependencies.minieffects]]
+modId="forge"
+mandatory=true
+versionRange="[37.0.59,)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.minieffects]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.17.1,1.18)"
+ordering="NONE"
+side="BOTH"

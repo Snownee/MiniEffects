@@ -2,8 +2,8 @@ package snownee.minieffects;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.Rect2i;
 
 public interface IAreasGetter {
-	List<Rectangle2d> getAreas();
+	List<Rect2i> getAreas();
 }
