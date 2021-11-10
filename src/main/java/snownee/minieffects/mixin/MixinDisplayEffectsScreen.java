@@ -11,35 +11,47 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.client.RenderProperties;
 import snownee.minieffects.IAreasGetter;
 
 @Mixin(EffectRenderingInventoryScreen.class)
-public class MixinDisplayEffectsScreen implements IAreasGetter {
+public abstract class MixinDisplayEffectsScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements IAreasGetter {
+	public MixinDisplayEffectsScreen(T pMenu, Inventory pPlayerInventory, Component pTitle) {
+		super(pMenu, pPlayerInventory, pTitle);
+	}
+
 	private boolean expand;
 	private int effects;
 	private Rect2i area;
 	private ItemStack iconItem = new ItemStack(Items.POTION);
+	private boolean firstTick;
 
+	// handle resize
 	@Inject(method = "init", at = @At("TAIL"))
-	protected void minimaleffects_init(CallbackInfo ci) {
-		updateArea();
+	private void minieffects$init(CallbackInfo ci) {
+		firstTick = true;
 	}
 
-	@Inject(method = "renderEffects", cancellable = true, at = @At("HEAD"))
-	public void minimaleffects_renderEffects(PoseStack matrixStack, CallbackInfo ci) {
-		Minecraft mc = Minecraft.getInstance();
+	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
+	public void minieffects$renderEffects(PoseStack matrixStack, CallbackInfo ci) {
+		if (firstTick) {
+			updateArea();
+			firstTick = false;
+		}
 		int effects = 0, bad = 0;
-		for (MobEffectInstance effectInstance : mc.player.getActiveEffects())
+		LocalPlayer player = minecraft.player;
+		for (MobEffectInstance effectInstance : player.getActiveEffects())
 			if (RenderProperties.getEffectRenderer(effectInstance).shouldRender(effectInstance)) {
 				++effects;
 				if (!effectInstance.getEffect().isBeneficial())
@@ -52,8 +64,8 @@ public class MixinDisplayEffectsScreen implements IAreasGetter {
 				updateArea();
 			}
 		}
-		int x = (int) (mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth());
-		int y = (int) (mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight());
+		int x = (int) (minecraft.mouseHandler.xpos() * minecraft.getWindow().getGuiScaledWidth() / minecraft.getWindow().getScreenWidth());
+		int y = (int) (minecraft.mouseHandler.ypos() * minecraft.getWindow().getGuiScaledHeight() / minecraft.getWindow().getScreenHeight());
 		boolean expand = area.contains(x, y);
 		if (expand != this.expand) {
 			this.expand = expand;
@@ -65,22 +77,21 @@ public class MixinDisplayEffectsScreen implements IAreasGetter {
 			x = area.getX();
 			y = area.getY();
 			GuiComponent.blit(matrixStack, x, y, 0, 141, 166, 24, 24, 256, 256);
-			LocalPlayer player = mc.player;
 			int color = player.getEntityData().get(MixinLivingEntity.getParameter());
 			iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
-			mc.getItemRenderer().renderAndDecorateItem(iconItem, x + 3, y + 4);
+			minecraft.getItemRenderer().renderAndDecorateItem(iconItem, x + 3, y + 4);
 			matrixStack.pushPose();
 			matrixStack.translate(0, 0, 200);
 			x += 22;
 			y += 14;
 			if (effects - bad > 0) {
 				String s = Integer.toString(effects - bad);
-				mc.font.drawShadow(matrixStack, s, x - mc.font.width(s), y, 16777215);
+				minecraft.font.drawShadow(matrixStack, s, x - minecraft.font.width(s), y, 16777215);
 				y -= 10;
 			}
 			if (bad > 0) {
 				String s = Integer.toString(bad);
-				mc.font.drawShadow(matrixStack, s, x - mc.font.width(s), y, 16733525);
+				minecraft.font.drawShadow(matrixStack, s, x - minecraft.font.width(s), y, 16733525);
 			}
 			matrixStack.popPose();
 			ci.cancel();
