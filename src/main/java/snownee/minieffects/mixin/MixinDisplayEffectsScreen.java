@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -34,20 +35,24 @@ public abstract class MixinDisplayEffectsScreen<T extends AbstractContainerMenu>
 	private int effects;
 	private Rect2i area;
 	private ItemStack iconItem = new ItemStack(Items.POTION);
-	private boolean firstTick;
+	//	private boolean firstTick = true;
 
 	// handle resize
-	@Inject(method = "init", at = @At("TAIL"))
-	private void minieffects$init(CallbackInfo ci) {
-		firstTick = true;
-	}
+	//	@Inject(method = "init", at = @At("TAIL"))
+	//	private void minieffects$init(CallbackInfo ci) {
+	//		firstTick = true;
+	//	}
 
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
-	private void minieffects$renderEffects(PoseStack matrixStack, CallbackInfo ci) {
-		if (firstTick) {
-			updateArea();
-			firstTick = false;
+	private void minieffects$renderEffects(PoseStack matrixStack, int i, int j, CallbackInfo ci) {
+		//		if (firstTick) {
+		updateArea();
+		if (area == null) {
+			return;
 		}
+		//			firstTick = false;
+		//		}
+
 		int effects = 0, bad = 0;
 		LocalPlayer player = minecraft.player;
 		for (MobEffectInstance effectInstance : player.getActiveEffects()) {
@@ -56,18 +61,18 @@ public abstract class MixinDisplayEffectsScreen<T extends AbstractContainerMenu>
 				++bad;
 		}
 
-		if (this.effects != effects) {
-			this.effects = effects;
-			if (effects == 0 || expand) {
-				updateArea();
-			}
-		}
+		//		if (this.effects != effects) {
+		this.effects = effects;
+		//			if (effects == 0 || expand) {
+		//				updateArea();
+		//			}
+		//		}
 		int x = (int) (minecraft.mouseHandler.xpos() * minecraft.getWindow().getGuiScaledWidth() / minecraft.getWindow().getScreenWidth());
 		int y = (int) (minecraft.mouseHandler.ypos() * minecraft.getWindow().getGuiScaledHeight() / minecraft.getWindow().getScreenHeight());
 		boolean expand = area.contains(x, y);
 		if (expand != this.expand) {
 			this.expand = expand;
-			updateArea();
+			//			updateArea();
 		}
 		if (effects > 0 && !expand) {
 			RenderSystem.setShaderTexture(0, AbstractContainerScreen.INVENTORY_LOCATION);
@@ -97,11 +102,17 @@ public abstract class MixinDisplayEffectsScreen<T extends AbstractContainerMenu>
 	}
 
 	private void updateArea() {
+		if (!canSeeEffects()) {
+			area = null;
+			return;
+		}
+		int left = leftPos + imageWidth + 2;
 		if (expand) {
+			boolean fullWidth = (width - left) >= 120;
 			int height = effects > 5 ? 165 : 33 * effects;
-			area = new Rect2i(leftPos - 124, topPos, 119, height);
+			area = new Rect2i(left, topPos, fullWidth ? 120 : 32, height);
 		} else {
-			area = new Rect2i(leftPos - 25, topPos, 20, 20);
+			area = new Rect2i(left, topPos, 20, 20);
 		}
 	}
 
@@ -113,10 +124,12 @@ public abstract class MixinDisplayEffectsScreen<T extends AbstractContainerMenu>
 	}
 
 	// cancel potion shift
-	@Inject(at = @At("TAIL"), method = "checkEffectRendering")
-	private void minieffects$checkEffectRendering(CallbackInfo ci) {
-		if (!minecraft.player.getActiveEffects().isEmpty())
-			this.leftPos = (this.width - this.imageWidth) / 2;
-	}
+	//	@Inject(at = @At("TAIL"), method = "checkEffectRendering")
+	//	private void minieffects$checkEffectRendering(CallbackInfo ci) {
+	//		if (!minecraft.player.getActiveEffects().isEmpty())
+	//			this.leftPos = (this.width - this.imageWidth) / 2;
+	//	}
 
+	@Shadow
+	abstract boolean canSeeEffects();
 }
