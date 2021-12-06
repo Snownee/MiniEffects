@@ -26,8 +26,8 @@ import net.minecraft.world.item.Items;
 import snownee.minieffects.IAreasGetter;
 
 @Mixin(EffectRenderingInventoryScreen.class)
-public abstract class MixinDisplayEffectsScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements IAreasGetter {
-	public MixinDisplayEffectsScreen(T abstractContainerMenu, Inventory inventory, Component component) {
+public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements IAreasGetter {
+	public DisplayEffectsScreenMixin(T abstractContainerMenu, Inventory inventory, Component component) {
 		super(abstractContainerMenu, inventory, component);
 	}
 
@@ -80,7 +80,7 @@ public abstract class MixinDisplayEffectsScreen<T extends AbstractContainerMenu>
 			x = area.getX();
 			y = area.getY();
 			GuiComponent.blit(matrixStack, x, y, 0, 141, 166, 24, 24, 256, 256);
-			int color = player.getEntityData().get(MixinLivingEntity.getParameter());
+			int color = player.getEntityData().get(LivingEntityAccessor.getParameter());
 			iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
 			minecraft.getItemRenderer().renderAndDecorateItem(iconItem, x + 3, y + 4);
 			matrixStack.pushPose();
