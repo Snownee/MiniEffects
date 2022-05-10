@@ -24,6 +24,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import snownee.minieffects.IAreasGetter;
+import snownee.minieffects.MiniEffects;
 
 @Mixin(EffectRenderingInventoryScreen.class)
 public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements IAreasGetter {
@@ -106,9 +107,20 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			area = null;
 			return;
 		}
-		int left = leftPos + imageWidth + 2;
+		int left;
+		boolean fullWidth;
+		if (MiniEffects.isLeftSide()) {
+			fullWidth = leftPos > 120;
+			if (expand) {
+				left = fullWidth ? leftPos - 120 - 4 : leftPos - 32 - 4;
+			} else {
+				left = leftPos - 20 - 8;
+			}
+		} else {
+			left = leftPos + imageWidth + 2;
+			fullWidth = (width - left) >= 120;
+		}
 		if (expand) {
-			boolean fullWidth = (width - left) >= 120;
 			int height = effects > 5 ? 165 : 33 * effects;
 			area = new Rect2i(left, topPos, fullWidth ? 120 : 32, height);
 		} else {

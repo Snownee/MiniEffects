@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[38,)"
+loaderVersion="[40,)"
 license="MIT"
 
 [[mods]]
@@ -13,8 +13,8 @@ displayURL="https://www.curseforge.com/minecraft/mc-mods/mini-effects"
 [[dependencies.minieffects]]
     modId="forge"
     mandatory=true
-    versionRange="[38.0.14, )"
-    ordering="BEFORE"
+    versionRange="[40.0.7, )"
+    ordering="NONE"
     side="BOTH"
 
 [modproperties.minieffects]
