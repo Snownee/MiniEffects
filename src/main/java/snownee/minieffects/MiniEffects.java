@@ -3,7 +3,9 @@ package snownee.minieffects;
 import me.shedaniel.rei.api.client.config.ConfigObject;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import snownee.kiwi.Mod;
 
+@Mod("minieffects")
 public class MiniEffects implements ClientModInitializer {
 
 	public static boolean hasREI;
@@ -17,7 +19,7 @@ public class MiniEffects implements ClientModInitializer {
 		if (hasREI) {
 			return ConfigObject.getInstance().isLeftSideMobEffects();
 		}
-		return false;
+		return MiniEffectsConfig.effectsOnLeft;
 	}
 
 }
