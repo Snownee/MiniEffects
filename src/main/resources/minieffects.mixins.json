@@ -4,13 +4,12 @@
   "package": "snownee.minieffects.mixin",
   "compatibilityLevel": "JAVA_16",
   "refmap": "minieffects.refmap.json",
-  "mixins": [
-  ],
   "client": [
     "DisplayEffectsScreenMixin",
     "DisplayEffectsScreenMixinFailsafe",
-    "LivingEntityAccessor",
-    "compat.InventoryEffectRendererGuiHandlerMixin"
+    "LivingEntityAccess",
+    "jei.InventoryEffectRendererGuiHandlerMixin",
+    "rei.DefaultPotionEffectExclusionZonesMixin"
   ],
   "injectors": {
     "defaultRequire": 1

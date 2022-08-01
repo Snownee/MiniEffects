@@ -81,7 +81,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			x = area.getX();
 			y = area.getY();
 			GuiComponent.blit(matrixStack, x, y, 0, 141, 166, 24, 24, 256, 256);
-			int color = player.getEntityData().get(LivingEntityAccessor.getParameter());
+			int color = player.getEntityData().get(LivingEntityAccess.getParameter());
 			iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
 			minecraft.getItemRenderer().renderAndDecorateItem(iconItem, x + 3, y + 4);
 			matrixStack.pushPose();
@@ -133,6 +133,11 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 		if (area == null || effects == 0)
 			return Collections.EMPTY_LIST;
 		return Collections.singletonList(area);
+	}
+
+	@Override
+	public boolean isExpanded() {
+		return expand;
 	}
 
 	// cancel potion shift

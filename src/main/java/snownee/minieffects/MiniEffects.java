@@ -2,7 +2,6 @@ package snownee.minieffects;
 
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
@@ -28,8 +27,8 @@ public class MiniEffects {
 		return hasMod || MiniEffectsConfig.effectsOnLeft;
 	}
 
-	public void onPotionSizeEvent(ScreenEvent.PotionSizeEvent event) {
-		event.setResult(Event.Result.DEFAULT);
+	public void onPotionSizeEvent(ScreenEvent.RenderInventoryMobEffects event) {
+		event.setCompact(event.getAvailableSpace() < 120);
 	}
 
 }
