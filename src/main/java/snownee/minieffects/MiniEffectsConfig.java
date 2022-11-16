@@ -7,5 +7,6 @@ import snownee.kiwi.config.KiwiConfig.ConfigType;
 public class MiniEffectsConfig {
 
 	public static boolean effectsOnLeft;
+	public static boolean requiresHoldingTab;
 
 }

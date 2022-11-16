@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'fabric-loom' version '1.0-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -14,6 +14,7 @@ repositories {
     maven { url "https://maven.parchmentmc.org" }
     maven { url "https://maven.shedaniel.me/" }
 	maven { url = "https://dvs1.progwml6.com/files/maven/" }
+    maven { url "https://maven.terraformersmc.com/releases/" }
     maven {
         url "https://cursemaven.com"
         content {
@@ -36,7 +37,14 @@ dependencies {
 	
     modImplementation "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
 	
-	modImplementation "curse.maven:kiwi-549404:3871802"
+	modImplementation "curse.maven:kiwi-549404:4036309"
+    annotationProcessor "curse.maven:kiwi-549404:4036309"
+	
+    modImplementation("dev.architectury:architectury-fabric:${project.architectury_version}")
+    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
 loom {
@@ -72,6 +80,7 @@ java {
 }
 
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}
