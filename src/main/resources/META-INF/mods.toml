@@ -13,7 +13,14 @@ displayURL="https://www.curseforge.com/minecraft/mc-mods/mini-effects"
 [[dependencies.minieffects]]
     modId="forge"
     mandatory=true
-    versionRange="[40.0.7, )"
+    versionRange="[40.1, )"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.minieffects]]
+    modId="jei"
+    mandatory=false
+    versionRange="[10.2.1, )"
     ordering="NONE"
     side="BOTH"
 
