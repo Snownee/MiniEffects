@@ -1,6 +1,5 @@
 package snownee.minieffects.mixin;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,26 +39,13 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 	private int effects;
 	private Rect2i area;
 	private ItemStack iconItem = new ItemStack(Items.POTION);
-	//	private boolean firstTick = true;
-
-	// handle resize
-	//	@Inject(method = "init", at = @At("TAIL"))
-	//	private void minieffects$init(CallbackInfo ci) {
-	//		firstTick = true;
-	//	}
 
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
 	private void minieffects$renderEffects(PoseStack matrixStack, int i, int j, CallbackInfo ci) {
-		//		if (firstTick) {
 		updateArea();
 		if (area == null) {
-			if (MiniEffectsConfig.requiresHoldingTab) {
-				ci.cancel();
-			}
 			return;
 		}
-		//			firstTick = false;
-		//		}
 
 		int effects = 0, bad = 0;
 		LocalPlayer player = minecraft.player;
@@ -69,18 +55,13 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 				++bad;
 		}
 
-		//		if (this.effects != effects) {
 		this.effects = effects;
-		//			if (effects == 0 || expand) {
-		//				updateArea();
-		//			}
-		//		}
 		int x = (int) (minecraft.mouseHandler.xpos() * minecraft.getWindow().getGuiScaledWidth() / minecraft.getWindow().getScreenWidth());
 		int y = (int) (minecraft.mouseHandler.ypos() * minecraft.getWindow().getGuiScaledHeight() / minecraft.getWindow().getScreenHeight());
 		boolean expand = MiniEffectsConfig.requiresHoldingTab || area.contains(x, y);
 		if (expand != this.expand) {
 			this.expand = expand;
-			//			updateArea();
+			updateArea();
 		}
 		if (effects > 0 && !expand) {
 			RenderSystem.setShaderTexture(0, AbstractContainerScreen.INVENTORY_LOCATION);
@@ -138,16 +119,14 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 	@Override
 	public List<Rect2i> getAreas() {
 		if (area == null || effects == 0)
-			return Collections.EMPTY_LIST;
-		return Collections.singletonList(area);
+			return List.of();
+		return List.of(area);
 	}
 
-	// cancel potion shift
-	//	@Inject(at = @At("TAIL"), method = "checkEffectRendering")
-	//	private void minieffects$checkEffectRendering(CallbackInfo ci) {
-	//		if (!minecraft.player.getActiveEffects().isEmpty())
-	//			this.leftPos = (this.width - this.imageWidth) / 2;
-	//	}
+	@Override
+	public boolean isExpanded() {
+		return expand;
+	}
 
 	@Shadow
 	abstract boolean canSeeEffects();

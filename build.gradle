@@ -14,7 +14,7 @@ group = project.maven_group
 repositories {
     maven { url "https://maven.parchmentmc.org" }
     maven { url "https://maven.shedaniel.me/" }
-	maven { url = "https://dvs1.progwml6.com/files/maven/" }
+	maven { url = "https://maven.blamejared.com/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
     maven {
         url "https://cursemaven.com"
@@ -37,6 +37,8 @@ dependencies {
     modImplementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 	
     modImplementation "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
+	
+	//modImplementation "dev.emi:emi:${emi_version}"
 	
 	modImplementation "curse.maven:kiwi-549404:4036309"
     annotationProcessor "curse.maven:kiwi-549404:4036309"

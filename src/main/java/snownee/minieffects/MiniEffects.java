@@ -8,18 +8,20 @@ import snownee.kiwi.Mod;
 @Mod("minieffects")
 public class MiniEffects implements ClientModInitializer {
 
+	public static boolean hasEffectsLeft;
 	public static boolean hasREI;
 
 	@Override
 	public void onInitializeClient() {
+		hasEffectsLeft = FabricLoader.getInstance().isModLoaded("effectsleft");
 		hasREI = FabricLoader.getInstance().isModLoaded("roughlyenoughitems");
 	}
 
 	public static boolean isLeftSide() {
-		if (hasREI) {
-			return ConfigObject.getInstance().isLeftSideMobEffects();
+		if (hasREI && ConfigObject.getInstance().isLeftSideMobEffects()) {
+			return true;
 		}
-		return MiniEffectsConfig.effectsOnLeft;
+		return hasEffectsLeft || MiniEffectsConfig.effectsOnLeft;
 	}
 
 }
