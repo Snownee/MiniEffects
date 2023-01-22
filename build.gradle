@@ -13,6 +13,13 @@ group = project.maven_group
 repositories {
     maven { url "https://maven.parchmentmc.org" }
     maven { url "https://maven.shedaniel.me/" }
+    maven { url "https://maven.blamejared.com/" }
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
@@ -30,7 +37,18 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
 	// modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:8.0.442"
-    modImplementation "me.shedaniel:RoughlyEnoughItems-fabric:8.0.442"
+    modImplementation "me.shedaniel:RoughlyEnoughItems-fabric:8.3.584"
+    
+    modImplementation "mezz.jei:jei-1.18.2-fabric:10.2.1.1002"
+    
+    modImplementation "curse.maven:kiwi-549404:3714092"
+    annotationProcessor "curse.maven:kiwi-549404:3714092"
+}
+
+loom {
+    mixin {
+        defaultRefmapName = "minieffects.refmap.json"
+    }
 }
 
 processResources {
@@ -60,6 +78,7 @@ java {
 }
 
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}

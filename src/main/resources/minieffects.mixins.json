@@ -6,9 +6,11 @@
   "mixins": [
   ],
   "client": [
-    "MixinDisplayEffectsScreen",
-    "MixinLivingEntity",
-    "compat.MixinDefaultPotionEffectExclusionZones"
+    "DisplayEffectsScreenMixin",
+    "DisplayEffectsScreenMixinFailsafe",
+    "LivingEntityAccess",
+    "jei.InventoryEffectRendererGuiHandlerMixin",
+    "rei.DefaultPotionEffectExclusionZonesMixin"
   ],
   "injectors": {
     "defaultRequire": 1

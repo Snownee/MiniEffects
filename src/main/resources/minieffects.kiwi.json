@@ -1,0 +1,10 @@
+{
+  "KiwiConfig": [
+    {
+      "target": "snownee.minieffects.MiniEffectsConfig",
+      "data": {
+        "type": "CLIENT"
+      }
+    }
+  ]
+}
