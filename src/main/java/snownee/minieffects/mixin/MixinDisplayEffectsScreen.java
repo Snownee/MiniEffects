@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import snownee.minieffects.IAreasGetter;
+import snownee.minieffects.MiniEffectsConfig;
 
 @Mixin(InventoryEffectRenderer.class)
 public class MixinDisplayEffectsScreen implements IAreasGetter {
@@ -99,7 +100,7 @@ public class MixinDisplayEffectsScreen implements IAreasGetter {
 			int height = effects > 5 ? 165 : 33 * effects;
 			area = new Rectangle(left - 124, top, 119, height);
 		} else {
-			area = new Rectangle(left - 25, top, 20, 20);
+			area = new Rectangle(left - 25 + MiniEffectsConfig.xOffset, top + MiniEffectsConfig.yOffset, 20, 20);
 		}
 	}
 

@@ -7,12 +7,15 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Mod(
-		modid = "minieffects", name = "Mini Effects", version = "@VERSION_INJECT@", acceptedMinecraftVersions = "[1.12, 1.13)", clientSideOnly = true
+		modid = MiniEffects.ID, name = "Mini Effects", version = "@VERSION_INJECT@", acceptedMinecraftVersions = "[1.12, 1.13)", clientSideOnly = true
 )
 public class MiniEffects {
+	public static final String ID = "minieffects";
+
 	public MiniEffects() {
 		if (FMLCommonHandler.instance().getSide().isClient()) {
 			MinecraftForge.EVENT_BUS.register(this);
+			MinecraftForge.EVENT_BUS.register(MiniEffectsConfig.class);
 		}
 	}
 
