@@ -14,7 +14,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import snownee.minieffects.MiniEffects;
 
 // trying to avoid conflicts with EffectsLeft (https://www.curseforge.com/minecraft/mc-mods/effectsleft)
-@Mixin(value = EffectRenderingInventoryScreen.class, priority = 900)
+@Mixin(value = EffectRenderingInventoryScreen.class, priority = 1100)
 public abstract class DisplayEffectsScreenMixinFailsafe<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
 	public DisplayEffectsScreenMixinFailsafe(T abstractContainerMenu, Inventory inventory, Component component) {
 		super(abstractContainerMenu, inventory, component);

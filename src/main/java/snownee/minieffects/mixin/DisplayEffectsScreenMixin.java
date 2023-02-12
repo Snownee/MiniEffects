@@ -17,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -44,6 +45,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 	private void minieffects$renderEffects(PoseStack matrixStack, int i, int j, CallbackInfo ci) {
 		updateArea();
 		if (area == null) {
+			ci.cancel();
 			return;
 		}
 
@@ -134,6 +136,9 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 	@Inject(at = @At("HEAD"), method = "canSeeEffects", cancellable = true)
 	private void minieffects$canSeeEffects(CallbackInfoReturnable<Boolean> ci) {
 		if (MiniEffectsConfig.requiresHoldingTab && !InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_TAB)) {
+			ci.setReturnValue(false);
+		}
+		if (this instanceof RecipeUpdateListener listener && listener.getRecipeBookComponent().isVisible()) {
 			ci.setReturnValue(false);
 		}
 	}
