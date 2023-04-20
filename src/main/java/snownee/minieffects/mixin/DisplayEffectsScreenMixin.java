@@ -73,7 +73,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			GuiComponent.blit(matrixStack, x, y, 0, 141, 166, 24, 24, 256, 256);
 			int color = player.getEntityData().get(LivingEntityAccess.getParameter());
 			iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
-			minecraft.getItemRenderer().renderAndDecorateItem(iconItem, x + 3, y + 4);
+			minecraft.getItemRenderer().renderAndDecorateItem(matrixStack, iconItem, x + 3, y + 4);
 			matrixStack.pushPose();
 			matrixStack.translate(0, 0, 200);
 			x += 22;

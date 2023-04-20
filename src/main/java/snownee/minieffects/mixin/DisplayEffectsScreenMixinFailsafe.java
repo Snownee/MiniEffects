@@ -28,7 +28,7 @@ public abstract class DisplayEffectsScreenMixinFailsafe<T extends AbstractContai
 	}
 
 	@ModifyVariable(method = "renderEffects", at = @At(value = "STORE", ordinal = 0), index = 4)
-	private int minieffects$renderEffects0(int i) {
+	private int minieffects$renderEffectsK(int k) {
 		if (MiniEffects.isLeftSide()) {
 			if (leftPos > 120) {
 				return leftPos - 120;
@@ -36,17 +36,30 @@ public abstract class DisplayEffectsScreenMixinFailsafe<T extends AbstractContai
 				return leftPos - 32;
 			}
 		} else {
-			return i;
+			return k;
 		}
 	}
 
 	@ModifyVariable(method = "renderEffects", at = @At(value = "STORE", ordinal = 0), index = 5)
-	private int minieffects$renderEffects1(int i) {
+	private int minieffects$renderEffectsL(int l) {
 		if (MiniEffects.isLeftSide()) {
 			return leftPos - 2;
 		} else {
-			return i;
+			return l;
 		}
+	}
+
+	// prevent full width mode from being modified by JEI
+	@ModifyVariable(method = "renderEffects", at = @At(value = "STORE", ordinal = 0), index = 7)
+	private boolean minieffects$renderEffectsBl(boolean bl) {
+		int l;
+		if (MiniEffects.isLeftSide()) {
+			l = leftPos - 2;
+		} else {
+			int k = leftPos + imageWidth + 2;
+			l = width - k;
+		}
+		return l >= 120;
 	}
 
 }

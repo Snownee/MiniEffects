@@ -40,8 +40,8 @@ dependencies {
 	
 	//modImplementation "dev.emi:emi:${emi_version}"
 	
-	modImplementation "curse.maven:kiwi-549404:4036309"
-    annotationProcessor "curse.maven:kiwi-549404:4036309"
+	modImplementation "curse.maven:kiwi-549404:4488597"
+    annotationProcessor "curse.maven:kiwi-549404:4488597"
 	
     modImplementation("dev.architectury:architectury-fabric:${project.architectury_version}")
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
@@ -118,7 +118,7 @@ modrinth {
     versionNumber = project.mod_version // You don't need to set this manually. Will fail if Modrinth has this version already
     versionType = "release" // This is the default -- can also be `beta` or `alpha`
     uploadFile = remapJar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    gameVersions = ["1.19.1", "1.19.2", "1.19.3"] // Must be an array, even with only one version
+    gameVersions = ["1.19.4"] // Must be an array, even with only one version
     loaders = ["fabric"] // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
     dependencies { // A special DSL for creating dependencies
         // scope.type
