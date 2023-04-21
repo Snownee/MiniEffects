@@ -7,10 +7,13 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
@@ -24,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import snownee.minieffects.IAreasGetter;
 import snownee.minieffects.MiniEffects;
+import snownee.minieffects.MiniEffectsConfig;
 
 @Mixin(EffectRenderingInventoryScreen.class)
 public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> implements IAreasGetter {
@@ -40,6 +44,9 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 	private void minieffects$renderEffects(PoseStack matrixStack, int i, int j, CallbackInfo ci) {
 		updateArea();
 		if (area == null) {
+			if (MiniEffectsConfig.requiresHoldingTab) {
+				ci.cancel();
+			}
 			return;
 		}
 
@@ -54,7 +61,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 		this.effects = effects;
 		int x = (int) (minecraft.mouseHandler.xpos() * minecraft.getWindow().getGuiScaledWidth() / minecraft.getWindow().getScreenWidth());
 		int y = (int) (minecraft.mouseHandler.ypos() * minecraft.getWindow().getGuiScaledHeight() / minecraft.getWindow().getScreenHeight());
-		boolean expand = area.contains(x, y);
+		boolean expand = MiniEffectsConfig.requiresHoldingTab || area.contains(x, y);
 		if (expand != this.expand) {
 			this.expand = expand;
 			updateArea();
@@ -67,7 +74,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			GuiComponent.blit(matrixStack, x, y, 0, 141, 166, 24, 24, 256, 256);
 			int color = player.getEntityData().get(LivingEntityAccess.getParameter());
 			iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
-			minecraft.getItemRenderer().renderAndDecorateItem(iconItem, x + 3, y + 4);
+			minecraft.getItemRenderer().renderAndDecorateItem(matrixStack, iconItem, x + 3, y + 4);
 			matrixStack.pushPose();
 			matrixStack.translate(0, 0, 200);
 			x += 22;
@@ -126,4 +133,11 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 
 	@Shadow
 	abstract boolean canSeeEffects();
+
+	@Inject(at = @At("HEAD"), method = "canSeeEffects", cancellable = true)
+	private void minieffects$canSeeEffects(CallbackInfoReturnable<Boolean> ci) {
+		if (MiniEffectsConfig.requiresHoldingTab && !InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_TAB)) {
+			ci.setReturnValue(false);
+		}
+	}
 }

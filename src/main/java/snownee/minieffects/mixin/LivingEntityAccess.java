@@ -10,6 +10,6 @@ import net.minecraft.world.entity.LivingEntity;
 public interface LivingEntityAccess {
 	@Accessor("DATA_EFFECT_COLOR_ID")
 	static EntityDataAccessor<Integer> getParameter() {
-		throw new IllegalStateException();
+		throw new AssertionError("wat?");
 	}
 }
