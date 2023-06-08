@@ -10,11 +10,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
@@ -42,7 +40,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 	private ItemStack iconItem = new ItemStack(Items.POTION);
 
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
-	private void minieffects$renderEffects(PoseStack matrixStack, int i, int j, CallbackInfo ci) {
+	private void minieffects$renderEffects(GuiGraphics guiGraphics, int i, int j, CallbackInfo ci) {
 		updateArea();
 		if (area == null) {
 			ci.cancel();
@@ -66,28 +64,26 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			updateArea();
 		}
 		if (effects > 0 && !expand) {
-			RenderSystem.setShaderTexture(0, AbstractContainerScreen.INVENTORY_LOCATION);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			x = area.getX();
 			y = area.getY();
-			GuiComponent.blit(matrixStack, x, y, 0, 141, 166, 24, 24, 256, 256);
+			guiGraphics.blit(AbstractContainerScreen.INVENTORY_LOCATION, x, y, 0, 141, 166, 24, 24, 256, 256);
 			int color = player.getEntityData().get(LivingEntityAccess.getParameter());
 			iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
-			minecraft.getItemRenderer().renderAndDecorateItem(matrixStack, iconItem, x + 3, y + 4);
-			matrixStack.pushPose();
-			matrixStack.translate(0, 0, 200);
+			guiGraphics.renderFakeItem(iconItem, x + 3, y + 4);
+			guiGraphics.pose().pushPose();
+			guiGraphics.pose().translate(0, 0, 200);
 			x += 22;
 			y += 14;
 			if (effects - bad > 0) {
 				String s = Integer.toString(effects - bad);
-				minecraft.font.drawShadow(matrixStack, s, x - minecraft.font.width(s), y, 16777215);
+				guiGraphics.drawString(minecraft.font, s, x - minecraft.font.width(s), y, 16777215);
 				y -= 10;
 			}
 			if (bad > 0) {
 				String s = Integer.toString(bad);
-				minecraft.font.drawShadow(matrixStack, s, x - minecraft.font.width(s), y, 16733525);
+				guiGraphics.drawString(minecraft.font, s, x - minecraft.font.width(s), y, 16733525);
 			}
-			matrixStack.popPose();
+			guiGraphics.pose().popPose();
 			ci.cancel();
 		}
 	}
