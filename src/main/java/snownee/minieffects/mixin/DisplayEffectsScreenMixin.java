@@ -20,6 +20,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -67,7 +68,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			x = area.getX();
 			y = area.getY();
 			guiGraphics.blit(AbstractContainerScreen.INVENTORY_LOCATION, x, y, 0, 141, 166, 24, 24, 256, 256);
-			int color = player.getEntityData().get(LivingEntityAccess.getParameter());
+			int color = player.getEntityData().get(LivingEntity.DATA_EFFECT_COLOR_ID);
 			iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
 			guiGraphics.renderFakeItem(iconItem, x + 3, y + 4);
 			guiGraphics.pose().pushPose();
@@ -131,11 +132,17 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 
 	@Inject(at = @At("HEAD"), method = "canSeeEffects", cancellable = true)
 	private void minieffects$canSeeEffects(CallbackInfoReturnable<Boolean> ci) {
+		if (MiniEffectsConfig.requiresHoldingTab && Minecraft.getInstance().options.keyInventory.key.getValue() == InputConstants.KEY_TAB) {
+			ci.setReturnValue(false);
+			return;
+		}
 		if (MiniEffectsConfig.requiresHoldingTab && !InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_TAB)) {
 			ci.setReturnValue(false);
+			return;
 		}
 		if (this instanceof RecipeUpdateListener listener && listener.getRecipeBookComponent().isVisible()) {
 			ci.setReturnValue(false);
+			return;
 		}
 	}
 }

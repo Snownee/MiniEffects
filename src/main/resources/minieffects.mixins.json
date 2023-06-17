@@ -8,7 +8,6 @@
   "client": [
     "DisplayEffectsScreenMixin",
     "DisplayEffectsScreenMixinFailsafe",
-    "LivingEntityAccess",
     "jei.InventoryEffectRendererGuiHandlerMixin",
     "rei.DefaultPotionEffectExclusionZonesMixin"
   ],
