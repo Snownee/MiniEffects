@@ -131,11 +131,17 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 
 	@Inject(at = @At("HEAD"), method = "canSeeEffects", cancellable = true)
 	private void minieffects$canSeeEffects(CallbackInfoReturnable<Boolean> ci) {
+		if (MiniEffectsConfig.requiresHoldingTab && Minecraft.getInstance().options.keyInventory.getKey().getValue() == InputConstants.KEY_TAB) {
+			ci.setReturnValue(false);
+			return;
+		}
 		if (MiniEffectsConfig.requiresHoldingTab && !InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_TAB)) {
 			ci.setReturnValue(false);
+			return;
 		}
 		if (this instanceof RecipeUpdateListener listener && listener.getRecipeBookComponent().isVisible()) {
 			ci.setReturnValue(false);
+			return;
 		}
 	}
 }
