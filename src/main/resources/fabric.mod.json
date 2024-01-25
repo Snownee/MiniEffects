@@ -21,6 +21,7 @@
     ]
   },
   "mixins": ["minieffects.mixins.json"],
+  "accessWidener": "minieffects.accesswidener",
 
   "depends": {
     "fabric-api": "*",
