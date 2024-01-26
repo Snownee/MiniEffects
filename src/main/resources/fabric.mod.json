@@ -7,7 +7,7 @@
   "description": "Add a toggle to show/hide potion effects view in inventory",
   "authors": ["Snownee"],
   "contact": {
-    "homepage": "https://minecraft.curseforge.com/projects/mini-effects-fabric",
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/mini-effects-fabric",
     "sources": "https://github.com/Snownee/MiniEffects",
     "issues": "https://github.com/Snownee/MiniEffects/issues"
   },
@@ -24,8 +24,7 @@
   "accessWidener": "minieffects.accesswidener",
 
   "depends": {
-    "fabric-api": "*",
-    "minecraft": ">=1.20",
+    "minecraft": ">=1.20.4",
     "java": ">=17"
   },
 

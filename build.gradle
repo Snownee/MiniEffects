@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.1-SNAPSHOT'
+    id 'fabric-loom' version '1.5.+'
     id 'maven-publish'
     id "me.shedaniel.unified-publishing" version "0.1.+"
 }
@@ -23,6 +23,7 @@ repositories {
         }
     }
     maven { url = "https://api.modrinth.com/maven" }
+    flatDir { dir 'libs' }
 }
 
 dependencies {
@@ -34,18 +35,16 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
     modImplementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 
-    //modImplementation "mezz.jei:jei-1.19.4-fabric:${jei_version}"
-    //modImplementation "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
+    modImplementation("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}")
 
     //modImplementation "dev.emi:emi:${emi_version}"
 
-    //modImplementation "curse.maven:kiwi-549404:4488597"
-    //annotationProcessor "curse.maven:kiwi-549404:4488597"
-    modImplementation "maven.modrinth:kiwi:CyGV9a95"
-    annotationProcessor "maven.modrinth:kiwi:CyGV9a95"
+    modImplementation "libs:Kiwi-${project.minecraft_version}-fabric:${project.kiwi_version}"
+    annotationProcessor "libs:Kiwi-${project.minecraft_version}-fabric:${project.kiwi_version}"
+//    modImplementation "maven.modrinth:kiwi:CyGV9a95"
+//    annotationProcessor "maven.modrinth:kiwi:CyGV9a95"
 
     //modImplementation("dev.architectury:architectury-fabric:${project.architectury_version}")
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
@@ -123,7 +122,7 @@ unifiedPublishing {
         version = project.mod_version // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
-        gameVersions = ["1.20", "1.20.1"]
+        gameVersions = ["1.20.4"]
         gameLoaders = ["fabric", "quilt"]
 
         mainPublication tasks.remapJar // Declares the publicated jar
