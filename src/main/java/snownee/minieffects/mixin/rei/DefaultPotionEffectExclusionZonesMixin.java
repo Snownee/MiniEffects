@@ -18,8 +18,9 @@ public class DefaultPotionEffectExclusionZonesMixin {
 
 	@Inject(method = "provide", at = @At("HEAD"), cancellable = true, require = 0)
 	private void getGuiExtraAreas(EffectRenderingInventoryScreen<?> containerScreen, CallbackInfoReturnable<Collection<Rectangle>> ci) {
-		if (containerScreen instanceof IAreasGetter)
+		if (containerScreen instanceof IAreasGetter) {
 			ci.setReturnValue(((IAreasGetter) containerScreen).getAreas().stream().map($ -> mapRect($)).toList());
+		}
 	}
 
 	private static Rectangle mapRect(Rect2i rect) {

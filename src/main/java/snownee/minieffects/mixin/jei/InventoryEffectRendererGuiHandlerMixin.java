@@ -17,8 +17,9 @@ public class InventoryEffectRendererGuiHandlerMixin {
 
 	@Inject(method = "getGuiExtraAreas", at = @At("HEAD"), cancellable = true, require = 0)
 	private void getGuiExtraAreas(EffectRenderingInventoryScreen<?> containerScreen, CallbackInfoReturnable<List<Rect2i>> ci) {
-		if (containerScreen instanceof IAreasGetter)
+		if (containerScreen instanceof IAreasGetter) {
 			ci.setReturnValue(((IAreasGetter) containerScreen).getAreas());
+		}
 	}
 
 }
