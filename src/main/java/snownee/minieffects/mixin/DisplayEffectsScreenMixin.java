@@ -1,6 +1,7 @@
 package snownee.minieffects.mixin;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,19 +13,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
 import snownee.minieffects.IAreasGetter;
 import snownee.minieffects.MiniEffects;
 import snownee.minieffects.MiniEffectsConfig;
@@ -47,18 +50,23 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			ci.cancel();
 			return;
 		}
+		if (minecraft == null || minecraft.player == null) {
+			return;
+		}
 
 		int effects = 0, bad = 0;
 		LocalPlayer player = minecraft.player;
 		for (MobEffectInstance effectInstance : player.getActiveEffects()) {
 			++effects;
-			if (!effectInstance.getEffect().isBeneficial())
+			if (!effectInstance.getEffect().value().isBeneficial()) {
 				++bad;
+			}
 		}
 
 		this.effects = effects;
 		int x = (int) (minecraft.mouseHandler.xpos() * minecraft.getWindow().getGuiScaledWidth() / minecraft.getWindow().getScreenWidth());
-		int y = (int) (minecraft.mouseHandler.ypos() * minecraft.getWindow().getGuiScaledHeight() / minecraft.getWindow().getScreenHeight());
+		int y = (int) (
+				minecraft.mouseHandler.ypos() * minecraft.getWindow().getGuiScaledHeight() / minecraft.getWindow().getScreenHeight());
 		boolean expand = MiniEffectsConfig.requiresHoldingTab || area.contains(x, y);
 		if (expand != this.expand) {
 			this.expand = expand;
@@ -67,9 +75,10 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 		if (effects > 0 && !expand) {
 			x = area.getX();
 			y = area.getY();
-			guiGraphics.blit(AbstractContainerScreen.INVENTORY_LOCATION, x, y, 0, 141, 166, 24, 24, 256, 256);
-			int color = player.getEntityData().get(LivingEntity.DATA_EFFECT_COLOR_ID);
-			iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
+			guiGraphics.blitSprite(Gui.EFFECT_BACKGROUND_SPRITE, x, y, 24, 24);
+			iconItem.set(
+					DataComponents.POTION_CONTENTS,
+					new PotionContents(Optional.empty(), Optional.empty(), List.copyOf(player.getActiveEffects())));
 			guiGraphics.renderFakeItem(iconItem, x + 3, y + 4);
 			guiGraphics.pose().pushPose();
 			guiGraphics.pose().translate(0, 0, 200);
@@ -117,8 +126,9 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 
 	@Override
 	public List<Rect2i> getAreas() {
-		if (area == null || effects == 0)
+		if (area == null || effects == 0) {
 			return List.of();
+		}
 		return List.of(area);
 	}
 
@@ -136,7 +146,9 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			ci.setReturnValue(false);
 			return;
 		}
-		if (MiniEffectsConfig.requiresHoldingTab && !InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_TAB)) {
+		if (MiniEffectsConfig.requiresHoldingTab && !InputConstants.isKeyDown(
+				Minecraft.getInstance().getWindow().getWindow(),
+				InputConstants.KEY_TAB)) {
 			ci.setReturnValue(false);
 			return;
 		}

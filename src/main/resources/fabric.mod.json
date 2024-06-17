@@ -24,8 +24,8 @@
   "accessWidener": "minieffects.accesswidener",
 
   "depends": {
-    "minecraft": ">=1.20.4",
-    "java": ">=17"
+    "minecraft": ">=1.21",
+    "kiwi": ">=15"
   },
 
   "custom": {
