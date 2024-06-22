@@ -25,7 +25,7 @@
 	"accessWidener": "minieffects.accesswidener",
 	"depends": {
 		"minecraft": ">=1.21",
-		"kiwi": ">=15"
+		"kiwi": ">=15.1"
 	},
 	"custom": {
 		"modmenu": {
