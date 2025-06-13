@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -19,8 +20,8 @@ import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -42,7 +43,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
 	private void minieffects$renderEffects(GuiGraphics guiGraphics, int i, int j, CallbackInfo ci) {
-		updateArea();
+		minieffects$updateArea();
 		if (area == null) {
 			ci.cancel();
 			return;
@@ -62,34 +63,69 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 		boolean expand = MiniEffectsConfig.requiresHoldingTab || area.contains(x, y);
 		if (expand != this.expand) {
 			this.expand = expand;
-			updateArea();
+			minieffects$updateArea();
 		}
 		if (effects > 0 && !expand) {
 			x = area.getX();
 			y = area.getY();
 			guiGraphics.blit(AbstractContainerScreen.INVENTORY_LOCATION, x, y, 0, 141, 166, 24, 24, 256, 256);
-			int color = player.getEntityData().get(LivingEntity.DATA_EFFECT_COLOR_ID);
-			iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
-			guiGraphics.renderFakeItem(iconItem, x + 3, y + 4);
-			guiGraphics.pose().pushPose();
-			guiGraphics.pose().translate(0, 0, 200);
-			x += 22;
-			y += 14;
-			if (effects - bad > 0) {
-				String s = Integer.toString(effects - bad);
-				guiGraphics.drawString(minecraft.font, s, x - minecraft.font.width(s), y, 16777215);
-				y -= 10;
+			var poseStack = guiGraphics.pose();
+
+			if (MiniEffectsConfig.showingEffectIcon) {
+				var effectsToShow = player.getActiveEffects().stream().limit(6).toList();
+				var mobEffectTextures = minecraft.getMobEffectTextures();
+				if (effectsToShow.size() == 1) {
+					guiGraphics.blit(x + 3, y + 3, 0, 18, 18, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
+				} else if (effectsToShow.size() == 2) {
+					guiGraphics.blit(x + 3, y + 3, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
+					guiGraphics.blit(x + 3 + 6, y + 3 + 6, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(1).getEffect()));
+				} else if (effectsToShow.size() > 2) {
+					var effectsPerLine = Mth.ceil(effectsToShow.size() / 2f);
+					var effectWidth = 15 / effectsPerLine;
+					for (var i1 = 0; i1 < effectsPerLine; i1++) {
+						var effectInstance = effectsToShow.get(i1);
+						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3, 0, 9, 9, mobEffectTextures.get(effectInstance.getEffect()));
+					}
+					for (var i1 = 0; i1 < effectsToShow.size() - effectsPerLine; i1++) {
+						var effectInstance = effectsToShow.get(i1 + effectsPerLine);
+						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3 + 9, 0, 9, 9, mobEffectTextures.get(effectInstance.getEffect()));
+					}
+				}
+			} else {
+				int color = player.getEntityData().get(LivingEntityAccess.getParameter());
+				iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
+				guiGraphics.renderFakeItem(iconItem, x + 3, y + 4);
 			}
+
+			poseStack.pushPose();
+			poseStack.translate(0, 0, 200);
 			if (bad > 0) {
 				String s = Integer.toString(bad);
-				guiGraphics.drawString(minecraft.font, s, x - minecraft.font.width(s), y, 16733525);
+				guiGraphics.drawString(
+						minecraft.font,
+						s,
+						x + 18 - minecraft.font.width(s),
+						y + 17,
+						16733525
+				);
 			}
-			guiGraphics.pose().popPose();
+			if (effects - bad > 0) {
+				String s = Integer.toString(effects - bad);
+				guiGraphics.drawString(
+						minecraft.font,
+						s,
+						x + 25 - minecraft.font.width(s),
+						y + 17,
+						16777215
+				);
+			}
+			poseStack.popPose();
 			ci.cancel();
 		}
 	}
 
-	private void updateArea() {
+	@Unique
+	private void minieffects$updateArea() {
 		if (!canSeeEffects()) {
 			area = null;
 			return;
@@ -128,7 +164,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 	}
 
 	@Shadow
-	abstract boolean canSeeEffects();
+	public abstract boolean canSeeEffects();
 
 	@Inject(at = @At("HEAD"), method = "canSeeEffects", cancellable = true)
 	private void minieffects$canSeeEffects(CallbackInfoReturnable<Boolean> ci) {
