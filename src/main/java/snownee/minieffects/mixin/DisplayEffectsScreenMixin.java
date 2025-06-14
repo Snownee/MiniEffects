@@ -72,23 +72,23 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			var poseStack = guiGraphics.pose();
 
 			if (MiniEffectsConfig.showingEffectIcon) {
-				var effectsToShow = player.getActiveEffects().stream().limit(6).toList();
+				var effectsToShow = player.getActiveEffects().stream().skip(Math.max(0, effects - 4)).toList();
 				var mobEffectTextures = minecraft.getMobEffectTextures();
 				if (effectsToShow.size() == 1) {
-					guiGraphics.blit(x + 3, y + 3, 0, 18, 18, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
+					guiGraphics.blit(x + 4, y + 4, 0, 16, 16, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
 				} else if (effectsToShow.size() == 2) {
-					guiGraphics.blit(x + 3, y + 3, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
-					guiGraphics.blit(x + 3 + 6, y + 3 + 6, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(1).getEffect()));
+					guiGraphics.blit(x + 3, y + 4, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
+					guiGraphics.blit(x + 3 + 8, y + 4 + 8, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(1).getEffect()));
 				} else if (effectsToShow.size() > 2) {
 					var effectsPerLine = Mth.ceil(effectsToShow.size() / 2f);
-					var effectWidth = 15 / effectsPerLine;
+					var effectWidth = 16 / effectsPerLine;
 					for (var i1 = 0; i1 < effectsPerLine; i1++) {
 						var effectInstance = effectsToShow.get(i1);
-						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3, 0, 9, 9, mobEffectTextures.get(effectInstance.getEffect()));
+						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
 					}
 					for (var i1 = 0; i1 < effectsToShow.size() - effectsPerLine; i1++) {
 						var effectInstance = effectsToShow.get(i1 + effectsPerLine);
-						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3 + 9, 0, 9, 9, mobEffectTextures.get(effectInstance.getEffect()));
+						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3 + 9, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
 					}
 				}
 			} else {
@@ -99,24 +99,26 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 
 			poseStack.pushPose();
 			poseStack.translate(0, 0, 200);
+			var yOffset = 0;
+			if (effects - bad > 0) {
+				yOffset = -10;
+				String s = Integer.toString(effects - bad);
+				guiGraphics.drawString(
+						minecraft.font,
+						s,
+						x + 22 - minecraft.font.width(s),
+						y + 14,
+						16777215
+				);
+			}
 			if (bad > 0) {
 				String s = Integer.toString(bad);
 				guiGraphics.drawString(
 						minecraft.font,
 						s,
-						x + 18 - minecraft.font.width(s),
-						y + 17,
+						x + 22 - minecraft.font.width(s),
+						y + 14 + yOffset,
 						16733525
-				);
-			}
-			if (effects - bad > 0) {
-				String s = Integer.toString(effects - bad);
-				guiGraphics.drawString(
-						minecraft.font,
-						s,
-						x + 25 - minecraft.font.width(s),
-						y + 17,
-						16777215
 				);
 			}
 			poseStack.popPose();
