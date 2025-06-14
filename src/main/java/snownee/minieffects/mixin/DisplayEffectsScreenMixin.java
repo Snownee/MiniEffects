@@ -71,7 +71,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			guiGraphics.blit(AbstractContainerScreen.INVENTORY_LOCATION, x, y, 0, 141, 166, 24, 24, 256, 256);
 			var poseStack = guiGraphics.pose();
 
-			if (MiniEffectsConfig.showingEffectIcon) {
+			if (!MiniEffectsConfig.potionItemIcon) {
 				var effectsToShow = player.getActiveEffects().stream().skip(Math.max(0, effects - 4)).toList();
 				var mobEffectTextures = minecraft.getMobEffectTextures();
 				if (effectsToShow.size() == 1) {
