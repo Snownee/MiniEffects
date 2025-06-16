@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -92,7 +93,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 					}
 				}
 			} else {
-				int color = player.getEntityData().get(LivingEntityAccess.getParameter());
+				int color = player.getEntityData().get(LivingEntity.DATA_EFFECT_COLOR_ID);
 				iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
 				guiGraphics.renderFakeItem(iconItem, x + 3, y + 4);
 			}
