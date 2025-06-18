@@ -11,7 +11,7 @@ targetCompatibility = JavaVersion.VERSION_21
 archivesBaseName = project.archives_base_name
 version = project.minecraft_version + "-NeoForge-" + project.mod_version
 group = project.maven_group
-var realVersion = project.mod_version + '+fabric'
+var realVersion = project.mod_version + '+neoforge'
 
 neoForge {
     // We currently only support NeoForge versions later than 21.0.x
