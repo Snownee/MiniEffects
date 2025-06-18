@@ -2,6 +2,7 @@ package snownee.minieffects.mixin;
 
 import java.util.List;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,6 +21,7 @@ import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Inventory;
@@ -70,7 +72,7 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 		if (effects > 0 && !expand) {
 			x = minieffects$area.getX();
 			y = minieffects$area.getY();
-			guiGraphics.blit(AbstractContainerScreen.INVENTORY_LOCATION, x, y, 0, 141, 166, 24, 24, 256, 256);
+			guiGraphics.blitSprite(GuiAccess.EFFECT_BACKGROUND_SPRITE(), x, y, 24,24);
 			var poseStack = guiGraphics.pose();
 
 			var effectsToShow = player.getActiveEffects().stream().skip(Math.max(0, effects - 4)).toList();
@@ -166,6 +168,10 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 
 	@Shadow
 	public abstract boolean canSeeEffects();
+
+	@Shadow
+	@Final
+	private static ResourceLocation EFFECT_BACKGROUND_SMALL_SPRITE;
 
 	@Inject(at = @At("HEAD"), method = "canSeeEffects", cancellable = true)
 	private void minieffects$canSeeEffects(CallbackInfoReturnable<Boolean> ci) {
