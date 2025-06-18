@@ -9,8 +9,9 @@ sourceCompatibility = JavaVersion.VERSION_21
 targetCompatibility = JavaVersion.VERSION_21
 
 archivesBaseName = project.archives_base_name
-version = project.minecraft_version + "-neoforge-" + project.mod_version
+version = project.minecraft_version + "-NeoForge-" + project.mod_version
 group = project.maven_group
+var realVersion = project.mod_version + '+fabric'
 
 neoForge {
     // We currently only support NeoForge versions later than 21.0.x
@@ -64,10 +65,10 @@ dependencies {
 }
 
 processResources {
-    inputs.property "version", project.mod_version
+    inputs.property "version", realVersion
 
     filesMatching("META-INF/neoforge.mods.toml") {
-        expand "version": project.mod_version
+        expand "version": realVersion
     }
 }
 
@@ -99,7 +100,7 @@ jar {
 unifiedPublishing {
     project {
         displayName = "[NeoForge $project.supported_version] $project.mod_version"
-        version = project.mod_version // Optional, Inferred from project by default
+        version = realVersion // Optional, Inferred from project by default
         changelog = file("CHANGELOG.md").exists() ? file("CHANGELOG.md").text : "" // Optional, in markdown format
         releaseType = project.release_type // Optional, use "release", "beta" or "alpha"
         gameVersions = ["1.21", "1.21.1"]
