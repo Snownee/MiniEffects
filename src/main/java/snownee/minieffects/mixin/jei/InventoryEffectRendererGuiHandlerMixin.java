@@ -15,13 +15,18 @@ import snownee.minieffects.IAreasGetter;
 @Mixin(value = InventoryEffectRendererGuiHandler.class, remap = false)
 public class InventoryEffectRendererGuiHandlerMixin {
 
-	@Inject(method = "getGuiExtraAreas(Lnet/minecraft/client/gui/screens/inventory/EffectRenderingInventoryScreen;)Ljava/util/List;", at = @At("HEAD"), cancellable = true, require = 0)
+	@Inject(
+			method = "getGuiExtraAreas(Lnet/minecraft/client/gui/screens/inventory/EffectRenderingInventoryScreen;)Ljava/util/List;",
+			at = @At("HEAD"),
+			cancellable = true,
+			require = 0)
 	private void getGuiExtraAreas(
 			EffectRenderingInventoryScreen<?> containerScreen,
 			CallbackInfoReturnable<List<Rect2i>> ci
 	) {
-		if (containerScreen instanceof IAreasGetter)
-			ci.setReturnValue(((IAreasGetter) containerScreen).getAreas());
+		if (containerScreen instanceof IAreasGetter) {
+			ci.setReturnValue(((IAreasGetter) containerScreen).minieffects$getAreas());
+		}
 	}
 
 }

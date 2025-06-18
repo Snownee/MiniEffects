@@ -22,11 +22,8 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import snownee.minieffects.IAreasGetter;
 import snownee.minieffects.MiniEffects;
 import snownee.minieffects.MiniEffectsConfig;
@@ -37,15 +34,17 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 		super(abstractContainerMenu, inventory, component);
 	}
 
-	private boolean expand;
-	private int effects;
-	private Rect2i area;
-	private ItemStack iconItem = new ItemStack(Items.POTION);
+	@Unique
+	private boolean minieffects$expand;
+	@Unique
+	private int minieffects$effects;
+	@Unique
+	private Rect2i minieffects$area;
 
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
-	private void minieffects$renderEffects(GuiGraphics guiGraphics, int i, int j, CallbackInfo ci) {
+	private void minieffects$renderEffects(final GuiGraphics guiGraphics, final int mouseX, final int mouseY, final CallbackInfo ci) {
 		minieffects$updateArea();
-		if (area == null) {
+		if (minieffects$area == null) {
 			ci.cancel();
 			return;
 		}
@@ -54,21 +53,23 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 		LocalPlayer player = minecraft.player;
 		for (MobEffectInstance effectInstance : player.getActiveEffects()) {
 			++effects;
-			if (!effectInstance.getEffect().isBeneficial())
+			if (!effectInstance.getEffect().value().isBeneficial()) {
 				++bad;
+			}
 		}
 
-		this.effects = effects;
+		this.minieffects$effects = effects;
 		int x = (int) (minecraft.mouseHandler.xpos() * minecraft.getWindow().getGuiScaledWidth() / minecraft.getWindow().getScreenWidth());
-		int y = (int) (minecraft.mouseHandler.ypos() * minecraft.getWindow().getGuiScaledHeight() / minecraft.getWindow().getScreenHeight());
-		boolean expand = MiniEffectsConfig.requiresHoldingTab || area.contains(x, y);
-		if (expand != this.expand) {
-			this.expand = expand;
+		int y = (int) (
+				minecraft.mouseHandler.ypos() * minecraft.getWindow().getGuiScaledHeight() / minecraft.getWindow().getScreenHeight());
+		boolean expand = MiniEffectsConfig.requiresHoldingTab || minieffects$area.contains(x, y);
+		if (expand != this.minieffects$expand) {
+			this.minieffects$expand = expand;
 			minieffects$updateArea();
 		}
 		if (effects > 0 && !expand) {
-			x = area.getX();
-			y = area.getY();
+			x = minieffects$area.getX();
+			y = minieffects$area.getY();
 			guiGraphics.blit(AbstractContainerScreen.INVENTORY_LOCATION, x, y, 0, 141, 166, 24, 24, 256, 256);
 			var poseStack = guiGraphics.pose();
 
@@ -130,14 +131,14 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 	@Unique
 	private void minieffects$updateArea() {
 		if (!canSeeEffects()) {
-			area = null;
+			minieffects$area = null;
 			return;
 		}
 		int left;
 		boolean fullWidth;
 		if (MiniEffects.isLeftSide()) {
 			fullWidth = leftPos > 120;
-			if (expand) {
+			if (minieffects$expand) {
 				left = fullWidth ? leftPos - 120 - 4 : leftPos - 32 - 4;
 			} else {
 				left = leftPos - 20 - 8;
@@ -146,24 +147,27 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			left = leftPos + imageWidth + 2;
 			fullWidth = (width - left) >= 120;
 		}
-		if (expand) {
-			int height = effects > 5 ? 165 : 33 * effects;
-			area = new Rect2i(left, topPos, fullWidth ? 120 : 32, height);
+		if (minieffects$expand) {
+			int height = minieffects$effects > 5 ? 165 : 33 * minieffects$effects;
+			minieffects$area = new Rect2i(left, topPos, fullWidth ? 120 : 32, height);
 		} else {
-			area = new Rect2i(left, topPos, 20, 20);
+			minieffects$area = new Rect2i(left, topPos, 20, 20);
 		}
 	}
 
+	@Unique
 	@Override
-	public List<Rect2i> getAreas() {
-		if (area == null || effects == 0)
+	public List<Rect2i> minieffects$getAreas() {
+		if (minieffects$area == null || minieffects$effects == 0) {
 			return List.of();
-		return List.of(area);
+		}
+		return List.of(minieffects$area);
 	}
 
+	@Unique
 	@Override
-	public boolean isExpanded() {
-		return expand;
+	public boolean minieffects$isExpanded() {
+		return minieffects$expand;
 	}
 
 	@Shadow
@@ -175,13 +179,14 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			ci.setReturnValue(false);
 			return;
 		}
-		if (MiniEffectsConfig.requiresHoldingTab && !InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), InputConstants.KEY_TAB)) {
+		if (MiniEffectsConfig.requiresHoldingTab && !InputConstants.isKeyDown(
+				Minecraft.getInstance().getWindow().getWindow(),
+				InputConstants.KEY_TAB)) {
 			ci.setReturnValue(false);
 			return;
 		}
 		if (this instanceof RecipeUpdateListener listener && listener.getRecipeBookComponent().isVisible()) {
 			ci.setReturnValue(false);
-			return;
 		}
 	}
 }

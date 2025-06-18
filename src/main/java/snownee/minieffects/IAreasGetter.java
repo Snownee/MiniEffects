@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.client.renderer.Rect2i;
 
 public interface IAreasGetter {
-	List<Rect2i> getAreas();
+	List<Rect2i> minieffects$getAreas();
 
-	boolean isExpanded();
+	boolean minieffects$isExpanded();
 }

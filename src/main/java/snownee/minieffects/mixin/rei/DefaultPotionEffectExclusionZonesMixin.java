@@ -17,10 +17,18 @@ import snownee.minieffects.IAreasGetter;
 @Mixin(value = DefaultPotionEffectExclusionZones.class, remap = false)
 public class DefaultPotionEffectExclusionZonesMixin {
 
-	@Inject(method = "provide", at = @At("HEAD"), cancellable = true, require = 0)
+	@Inject(
+			method = "provide(Lnet/minecraft/client/gui/screens/inventory/EffectRenderingInventoryScreen;)Ljava/util/Collection;",
+			at = @At("HEAD"),
+			cancellable = true,
+			require = 0)
 	private void getGuiExtraAreas(EffectRenderingInventoryScreen<?> containerScreen, CallbackInfoReturnable<Collection<Rectangle>> ci) {
-		if (containerScreen instanceof IAreasGetter)
-			ci.setReturnValue(((IAreasGetter) containerScreen).getAreas().stream().map(DefaultPotionEffectExclusionZonesMixin::minieffects$mapRect).toList());
+		if (containerScreen instanceof IAreasGetter) {
+			ci.setReturnValue(((IAreasGetter) containerScreen).minieffects$getAreas()
+					.stream()
+					.map(DefaultPotionEffectExclusionZonesMixin::minieffects$mapRect)
+					.toList());
+		}
 	}
 
 	@Unique
