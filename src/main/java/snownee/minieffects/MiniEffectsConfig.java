@@ -8,6 +8,5 @@ public class MiniEffectsConfig {
 
 	public static boolean effectsOnLeft;
 	public static boolean requiresHoldingTab;
-	public static boolean potionItemIcon;
 
 }

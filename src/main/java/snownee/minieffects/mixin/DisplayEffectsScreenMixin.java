@@ -73,30 +73,24 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			guiGraphics.blit(AbstractContainerScreen.INVENTORY_LOCATION, x, y, 0, 141, 166, 24, 24, 256, 256);
 			var poseStack = guiGraphics.pose();
 
-			if (!MiniEffectsConfig.potionItemIcon) {
-				var effectsToShow = player.getActiveEffects().stream().skip(Math.max(0, effects - 4)).toList();
-				var mobEffectTextures = minecraft.getMobEffectTextures();
-				if (effectsToShow.size() == 1) {
-					guiGraphics.blit(x + 4, y + 4, 0, 16, 16, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
-				} else if (effectsToShow.size() == 2) {
-					guiGraphics.blit(x + 3, y + 4, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
-					guiGraphics.blit(x + 3 + 8, y + 4 + 8, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(1).getEffect()));
-				} else if (effectsToShow.size() > 2) {
-					var effectsPerLine = Mth.ceil(effectsToShow.size() / 2f);
-					var effectWidth = 16 / effectsPerLine;
-					for (var i1 = 0; i1 < effectsPerLine; i1++) {
-						var effectInstance = effectsToShow.get(i1);
-						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
-					}
-					for (var i1 = 0; i1 < effectsToShow.size() - effectsPerLine; i1++) {
-						var effectInstance = effectsToShow.get(i1 + effectsPerLine);
-						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3 + 9, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
-					}
+			var effectsToShow = player.getActiveEffects().stream().skip(Math.max(0, effects - 4)).toList();
+			var mobEffectTextures = minecraft.getMobEffectTextures();
+			if (effectsToShow.size() == 1) {
+				guiGraphics.blit(x + 4, y + 4, 0, 16, 16, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
+			} else if (effectsToShow.size() == 2) {
+				guiGraphics.blit(x + 3, y + 4, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
+				guiGraphics.blit(x + 3 + 8, y + 4 + 8, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(1).getEffect()));
+			} else if (effectsToShow.size() > 2) {
+				var effectsPerLine = Mth.ceil(effectsToShow.size() / 2f);
+				var effectWidth = 16 / effectsPerLine;
+				for (var i1 = 0; i1 < effectsPerLine; i1++) {
+					var effectInstance = effectsToShow.get(i1);
+					guiGraphics.blit(x + 3 + effectWidth * i1, y + 3, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
 				}
-			} else {
-				int color = player.getEntityData().get(LivingEntity.DATA_EFFECT_COLOR_ID);
-				iconItem.getOrCreateTag().putInt("CustomPotionColor", color);
-				guiGraphics.renderFakeItem(iconItem, x + 3, y + 4);
+				for (var i1 = 0; i1 < effectsToShow.size() - effectsPerLine; i1++) {
+					var effectInstance = effectsToShow.get(i1 + effectsPerLine);
+					guiGraphics.blit(x + 3 + effectWidth * i1, y + 3 + 9, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
+				}
 			}
 
 			poseStack.pushPose();
