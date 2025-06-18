@@ -1,6 +1,7 @@
 package snownee.minieffects.mixin;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,12 +21,16 @@ import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
 import snownee.minieffects.IAreasGetter;
 import snownee.minieffects.MiniEffects;
 import snownee.minieffects.MiniEffectsConfig;
@@ -42,12 +47,17 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 	private int minieffects$effects;
 	@Unique
 	private Rect2i minieffects$area;
+	@Unique
+	private ItemStack minieffects$iconItem = new ItemStack(Items.POTION);
 
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
 	private void minieffects$renderEffects(final GuiGraphics guiGraphics, final int mouseX, final int mouseY, final CallbackInfo ci) {
 		minieffects$updateArea();
 		if (minieffects$area == null) {
 			ci.cancel();
+			return;
+		}
+		if (minecraft == null || minecraft.player == null) {
 			return;
 		}
 
@@ -75,24 +85,31 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			guiGraphics.blitSprite(GuiAccess.EFFECT_BACKGROUND_SPRITE(), x, y, 24,24);
 			var poseStack = guiGraphics.pose();
 
-			var effectsToShow = player.getActiveEffects().stream().skip(Math.max(0, effects - 4)).toList();
-			var mobEffectTextures = minecraft.getMobEffectTextures();
-			if (effectsToShow.size() == 1) {
-				guiGraphics.blit(x + 4, y + 4, 0, 16, 16, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
-			} else if (effectsToShow.size() == 2) {
-				guiGraphics.blit(x + 3, y + 4, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
-				guiGraphics.blit(x + 3 + 8, y + 4 + 8, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(1).getEffect()));
-			} else if (effectsToShow.size() > 2) {
-				var effectsPerLine = Mth.ceil(effectsToShow.size() / 2f);
-				var effectWidth = 16 / effectsPerLine;
-				for (var i1 = 0; i1 < effectsPerLine; i1++) {
-					var effectInstance = effectsToShow.get(i1);
-					guiGraphics.blit(x + 3 + effectWidth * i1, y + 3, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
+			if (!MiniEffectsConfig.potionItemIcon) {
+				var effectsToShow = player.getActiveEffects().stream().skip(Math.max(0, effects - 4)).toList();
+				var mobEffectTextures = minecraft.getMobEffectTextures();
+				if (effectsToShow.size() == 1) {
+					guiGraphics.blit(x + 4, y + 4, 0, 16, 16, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
+				} else if (effectsToShow.size() == 2) {
+					guiGraphics.blit(x + 3, y + 4, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
+					guiGraphics.blit(x + 3 + 8, y + 4 + 8, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(1).getEffect()));
+				} else if (effectsToShow.size() > 2) {
+					var effectsPerLine = Mth.ceil(effectsToShow.size() / 2f);
+					var effectWidth = 16 / effectsPerLine;
+					for (var i1 = 0; i1 < effectsPerLine; i1++) {
+						var effectInstance = effectsToShow.get(i1);
+						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
+					}
+					for (var i1 = 0; i1 < effectsToShow.size() - effectsPerLine; i1++) {
+						var effectInstance = effectsToShow.get(i1 + effectsPerLine);
+						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3 + 9, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
+					}
 				}
-				for (var i1 = 0; i1 < effectsToShow.size() - effectsPerLine; i1++) {
-					var effectInstance = effectsToShow.get(i1 + effectsPerLine);
-					guiGraphics.blit(x + 3 + effectWidth * i1, y + 3 + 9, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
-				}
+			} else {
+				minieffects$iconItem.set(
+					DataComponents.POTION_CONTENTS,
+					new PotionContents(Optional.empty(), Optional.empty(), List.copyOf(player.getActiveEffects())));
+				guiGraphics.renderFakeItem(minieffects$iconItem, x + 3, y + 4);
 			}
 
 			poseStack.pushPose();
