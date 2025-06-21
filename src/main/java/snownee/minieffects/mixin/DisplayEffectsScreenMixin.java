@@ -3,8 +3,10 @@ package snownee.minieffects.mixin;
 import java.util.List;
 import java.util.Optional;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -13,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
@@ -22,6 +23,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -38,15 +41,19 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 		super(abstractContainerMenu, inventory, component);
 	}
 
-	private boolean expand;
-	private int effects;
-	private Rect2i area;
-	private ItemStack iconItem = new ItemStack(Items.POTION);
+	@Unique
+	private boolean minieffects$expand;
+	@Unique
+	private int minieffects$effects;
+	@Unique
+	private Rect2i minieffects$area;
+	@Unique
+	private ItemStack minieffects$iconItem = new ItemStack(Items.POTION);
 
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
-	private void minieffects$renderEffects(GuiGraphics guiGraphics, int i, int j, CallbackInfo ci) {
-		updateArea();
-		if (area == null) {
+	private void minieffects$renderEffects(final GuiGraphics guiGraphics, final int mouseX, final int mouseY, final CallbackInfo ci) {
+		minieffects$updateArea();
+		if (minieffects$area == null) {
 			ci.cancel();
 			return;
 		}
@@ -63,51 +70,88 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			}
 		}
 
-		this.effects = effects;
+		this.minieffects$effects = effects;
 		int x = (int) (minecraft.mouseHandler.xpos() * minecraft.getWindow().getGuiScaledWidth() / minecraft.getWindow().getScreenWidth());
 		int y = (int) (
 				minecraft.mouseHandler.ypos() * minecraft.getWindow().getGuiScaledHeight() / minecraft.getWindow().getScreenHeight());
-		boolean expand = MiniEffectsConfig.requiresHoldingTab || area.contains(x, y);
-		if (expand != this.expand) {
-			this.expand = expand;
-			updateArea();
+		boolean expand = MiniEffectsConfig.requiresHoldingTab || minieffects$area.contains(x, y);
+		if (expand != this.minieffects$expand) {
+			this.minieffects$expand = expand;
+			minieffects$updateArea();
 		}
 		if (effects > 0 && !expand) {
-			x = area.getX();
-			y = area.getY();
-			guiGraphics.blitSprite(Gui.EFFECT_BACKGROUND_SPRITE, x, y, 24, 24);
-			iconItem.set(
+			x = minieffects$area.getX();
+			y = minieffects$area.getY();
+			guiGraphics.blitSprite(GuiAccess.EFFECT_BACKGROUND_SPRITE(), x, y, 24,24);
+			var poseStack = guiGraphics.pose();
+
+			if (!MiniEffectsConfig.potionItemIcon) {
+				var effectsToShow = player.getActiveEffects().stream().skip(Math.max(0, effects - 4)).toList();
+				var mobEffectTextures = minecraft.getMobEffectTextures();
+				if (effectsToShow.size() == 1) {
+					guiGraphics.blit(x + 4, y + 4, 0, 16, 16, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
+				} else if (effectsToShow.size() == 2) {
+					guiGraphics.blit(x + 3, y + 4, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(0).getEffect()));
+					guiGraphics.blit(x + 3 + 8, y + 4 + 8, 0, 10, 10, mobEffectTextures.get(effectsToShow.get(1).getEffect()));
+				} else if (effectsToShow.size() > 2) {
+					var effectsPerLine = Mth.ceil(effectsToShow.size() / 2f);
+					var effectWidth = 16 / effectsPerLine;
+					for (var i1 = 0; i1 < effectsPerLine; i1++) {
+						var effectInstance = effectsToShow.get(i1);
+						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
+					}
+					for (var i1 = 0; i1 < effectsToShow.size() - effectsPerLine; i1++) {
+						var effectInstance = effectsToShow.get(i1 + effectsPerLine);
+						guiGraphics.blit(x + 3 + effectWidth * i1, y + 3 + 9, 0, 8, 8, mobEffectTextures.get(effectInstance.getEffect()));
+					}
+				}
+			} else {
+				minieffects$iconItem.set(
 					DataComponents.POTION_CONTENTS,
 					new PotionContents(Optional.empty(), Optional.empty(), List.copyOf(player.getActiveEffects())));
-			guiGraphics.renderFakeItem(iconItem, x + 3, y + 4);
-			guiGraphics.pose().pushPose();
-			guiGraphics.pose().translate(0, 0, 200);
-			x += 22;
-			y += 14;
+				guiGraphics.renderFakeItem(minieffects$iconItem, x + 3, y + 4);
+			}
+
+			poseStack.pushPose();
+			poseStack.translate(0, 0, 200);
+			var yOffset = 0;
 			if (effects - bad > 0) {
+				yOffset = -10;
 				String s = Integer.toString(effects - bad);
-				guiGraphics.drawString(minecraft.font, s, x - minecraft.font.width(s), y, 16777215);
-				y -= 10;
+				guiGraphics.drawString(
+						minecraft.font,
+						s,
+						x + 22 - minecraft.font.width(s),
+						y + 14,
+						16777215
+				);
 			}
 			if (bad > 0) {
 				String s = Integer.toString(bad);
-				guiGraphics.drawString(minecraft.font, s, x - minecraft.font.width(s), y, 16733525);
+				guiGraphics.drawString(
+						minecraft.font,
+						s,
+						x + 22 - minecraft.font.width(s),
+						y + 14 + yOffset,
+						16733525
+				);
 			}
-			guiGraphics.pose().popPose();
+			poseStack.popPose();
 			ci.cancel();
 		}
 	}
 
-	private void updateArea() {
+	@Unique
+	private void minieffects$updateArea() {
 		if (!canSeeEffects()) {
-			area = null;
+			minieffects$area = null;
 			return;
 		}
 		int left;
 		boolean fullWidth;
 		if (MiniEffects.isLeftSide()) {
 			fullWidth = leftPos > 120;
-			if (expand) {
+			if (minieffects$expand) {
 				left = fullWidth ? leftPos - 120 - 4 : leftPos - 32 - 4;
 			} else {
 				left = leftPos - 20 - 8;
@@ -116,29 +160,35 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 			left = leftPos + imageWidth + 2;
 			fullWidth = (width - left) >= 120;
 		}
-		if (expand) {
-			int height = effects > 5 ? 165 : 33 * effects;
-			area = new Rect2i(left, topPos, fullWidth ? 120 : 32, height);
+		if (minieffects$expand) {
+			int height = minieffects$effects > 5 ? 165 : 33 * minieffects$effects;
+			minieffects$area = new Rect2i(left, topPos, fullWidth ? 120 : 32, height);
 		} else {
-			area = new Rect2i(left, topPos, 20, 20);
+			minieffects$area = new Rect2i(left, topPos, 20, 20);
 		}
 	}
 
+	@Unique
 	@Override
-	public List<Rect2i> getAreas() {
-		if (area == null || effects == 0) {
+	public List<Rect2i> minieffects$getAreas() {
+		if (minieffects$area == null || minieffects$effects == 0) {
 			return List.of();
 		}
-		return List.of(area);
+		return List.of(minieffects$area);
 	}
 
+	@Unique
 	@Override
-	public boolean isExpanded() {
-		return expand;
+	public boolean minieffects$isExpanded() {
+		return minieffects$expand;
 	}
 
 	@Shadow
-	abstract boolean canSeeEffects();
+	public abstract boolean canSeeEffects();
+
+	@Shadow
+	@Final
+	private static ResourceLocation EFFECT_BACKGROUND_SMALL_SPRITE;
 
 	@Inject(at = @At("HEAD"), method = "canSeeEffects", cancellable = true)
 	private void minieffects$canSeeEffects(CallbackInfoReturnable<Boolean> ci) {
@@ -154,7 +204,6 @@ public abstract class DisplayEffectsScreenMixin<T extends AbstractContainerMenu>
 		}
 		if (this instanceof RecipeUpdateListener listener && listener.getRecipeBookComponent().isVisible()) {
 			ci.setReturnValue(false);
-			return;
 		}
 	}
 }

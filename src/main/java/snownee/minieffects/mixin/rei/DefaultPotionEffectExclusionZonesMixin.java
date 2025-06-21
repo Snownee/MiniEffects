@@ -3,6 +3,7 @@ package snownee.minieffects.mixin.rei;
 import java.util.Collection;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -16,14 +17,22 @@ import snownee.minieffects.IAreasGetter;
 @Mixin(value = DefaultPotionEffectExclusionZones.class, remap = false)
 public class DefaultPotionEffectExclusionZonesMixin {
 
-	@Inject(method = "provide", at = @At("HEAD"), cancellable = true, require = 0)
+	@Inject(
+			method = "provide(Lnet/minecraft/client/gui/screens/inventory/EffectRenderingInventoryScreen;)Ljava/util/Collection;",
+			at = @At("HEAD"),
+			cancellable = true,
+			require = 0)
 	private void getGuiExtraAreas(EffectRenderingInventoryScreen<?> containerScreen, CallbackInfoReturnable<Collection<Rectangle>> ci) {
 		if (containerScreen instanceof IAreasGetter) {
-			ci.setReturnValue(((IAreasGetter) containerScreen).getAreas().stream().map($ -> mapRect($)).toList());
+			ci.setReturnValue(((IAreasGetter) containerScreen).minieffects$getAreas()
+					.stream()
+					.map(DefaultPotionEffectExclusionZonesMixin::minieffects$mapRect)
+					.toList());
 		}
 	}
 
-	private static Rectangle mapRect(Rect2i rect) {
+	@Unique
+	private static Rectangle minieffects$mapRect(Rect2i rect) {
 		return new Rectangle(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
 	}
 
