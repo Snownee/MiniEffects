@@ -1,20 +1,24 @@
 package snownee.minieffects;
 
 import me.shedaniel.rei.api.client.config.ConfigObject;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
-import snownee.kiwi.Mod;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 @Mod("minieffects")
-public class MiniEffects implements ClientModInitializer {
+public class MiniEffects {
 
 	public static boolean hasEffectsLeft;
 	public static boolean hasREI;
 
-	@Override
+	public MiniEffects(IEventBus modBus) {
+		modBus.addListener((FMLClientSetupEvent event) -> onInitializeClient());
+	}
+
 	public void onInitializeClient() {
-		hasEffectsLeft = FabricLoader.getInstance().isModLoaded("effectsleft");
-		hasREI = FabricLoader.getInstance().isModLoaded("roughlyenoughitems");
+		hasEffectsLeft = ModList.get().isLoaded("effectsleft");
+		hasREI = ModList.get().isLoaded("roughlyenoughitems");
 	}
 
 	public static boolean isLeftSide() {
